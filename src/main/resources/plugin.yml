@@ -1,0 +1,14 @@
+name: TownyPermissions
+version: '${project.version}'
+main: org.dexterx.mc.townypermissions.TownyPermissions
+api-version: '1.20'
+depend: [Towny, LuckPerms]
+authors: [DexterX]
+description: Permissions per Towny
+
+commands:
+  tperm:
+    description: Manage permissions per town
+    usage: /tperm <Town> <add|remove> <permission>
+    permission: townypermissions.manage
+    permission-message: You don't have permission to use this command.
