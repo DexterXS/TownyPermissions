@@ -1,9 +1,9 @@
 Here's a `README.md` file for your plugin with the MIT license:
 
 ```markdown
-# TownyPermissoins
+# TownyPermissions
 
-TownyPermissoins is a Minecraft plugin that integrates Towny and LuckPerms to manage permissions based on town membership. This plugin automatically assigns or removes permissions for players based on the town they belong to, ensuring that permissions are kept up-to-date without manual intervention.
+TownyPermissions is a Minecraft plugin that integrates Towny and LuckPerms to manage permissions based on town membership. This plugin automatically assigns or removes permissions for players based on the town they belong to, ensuring that permissions are kept up-to-date without manual intervention.
 
 ## Features
 
@@ -15,7 +15,7 @@ TownyPermissoins is a Minecraft plugin that integrates Towny and LuckPerms to ma
 ## Installation
 
 1. Download the latest release of TownyPermissoins.
-2. Place the `TownyPermissoins.jar` file in your server's `plugins` directory.
+2. Place the `TownyPermissions.jar` file in your server's `plugins` directory.
 3. Restart your server to load the plugin.
 
 ## Configuration
@@ -54,11 +54,11 @@ To remove the fly command permission from the town "Odessa":
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/TownyPermissoins.git
+    git clone https://github.com/yourusername/TownyPermissions.git
     ```
 2. Navigate to the project directory:
     ```sh
-    cd TownyPermissoins
+    cd TownyPermissions
     ```
 3. Build the project using Maven:
     ```sh
@@ -102,7 +102,7 @@ SOFTWARE.
 
 ## Issues
 
-If you encounter any issues or have any suggestions, please open an issue on the [GitHub repository](https://github.com/yourusername/TownyPermissoins/issues).
+If you encounter any issues or have any suggestions, please open an issue on the [GitHub repository](https://github.com/yourusername/TownyPermissions/issues).
 
 ---
 
