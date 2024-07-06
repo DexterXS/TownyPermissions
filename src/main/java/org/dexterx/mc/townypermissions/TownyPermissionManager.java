@@ -32,7 +32,7 @@ public class TownyPermissionManager {
         }
 
         if (townName == null) {
-            // Игрок не резидент никакого города
+            // Игрок не резидент никакого города проверка
             removePlayerFromTownGroups(user);
             return;
         }
