@@ -1,90 +1,51 @@
 package org.dexterx.mc.townypermissions;
 
-import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
-import net.luckperms.api.node.types.PermissionNode;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class TownyPermissionManager implements Listener {
+public class TownyPermissionManager {
     private final JavaPlugin plugin;
     private final LuckPerms luckPerms;
     private final Logger logger;
-    private final Map<Player, Long> lastCheckTime;
 
     public TownyPermissionManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.luckPerms = LuckPermsProvider.get();
         this.logger = plugin.getLogger();
-        this.lastCheckTime = new HashMap<>();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        updatePlayerPermissions(event.getPlayer());
-    }
+    public void updatePlayerPermissions(Player player, String townName) {
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
 
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        long currentTime = System.currentTimeMillis();
-        long lastChecked = lastCheckTime.getOrDefault(player, 0L);
-
-        // Проверяем права не чаще, чем раз в секунду
-        if (currentTime - lastChecked > 1000) {
-            updatePlayerPermissions(player);
-            lastCheckTime.put(player, currentTime);
+        if (user == null) {
+            logger.warning("Could not find LuckPerms user for player " + player.getName());
+            return;
         }
-    }
 
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        lastCheckTime.remove(event.getPlayer());
-    }
+        if (townName == null) {
+            // Игрок не резидент никакого города
+            removePlayerFromTownGroups(user);
+            return;
+        }
 
-    private void updatePlayerPermissions(Player player) {
-        Resident resident = TownyAPI.getInstance().getResident(player.getUniqueId());
-        if (resident != null) {
-            Town town = resident.getTownOrNull();
-            if (town != null) {
-                String groupName = "town_" + town.getName();
-                User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-                if (user != null) {
-                    if (!isPlayerInGroup(user, groupName)) {
-                        removePlayerFromTownGroups(user);
-                        Group townGroup = getOrCreateGroup(groupName);
-                        if (townGroup != null) {
-                            user.data().add(Node.builder("group." + groupName).build());
-                            luckPerms.getUserManager().saveUser(user);
-                        }
-                    }
-                } else {
-                    logger.warning("Could not find LuckPerms user for player " + player.getName());
-                }
-            } else {
-                logger.warning("Could not find town for resident " + resident.getName());
+        String groupName = "town_" + townName;
+
+        if (!isPlayerInGroup(user, groupName)) {
+            removePlayerFromTownGroups(user);
+            Group townGroup = getOrCreateGroup(groupName);
+            if (townGroup != null) {
+                user.data().add(Node.builder("group." + groupName).build());
+                luckPerms.getUserManager().saveUser(user);
             }
-        } else {
-            logger.warning("Could not find resident for player " + player.getName());
         }
     }
 
@@ -98,6 +59,7 @@ public class TownyPermissionManager implements Listener {
                 .filter(node -> node.getKey().startsWith("group.town_"))
                 .collect(Collectors.toList())
                 .forEach(user.data()::remove);
+        luckPerms.getUserManager().saveUser(user);
     }
 
     private Group getOrCreateGroup(String groupName) {

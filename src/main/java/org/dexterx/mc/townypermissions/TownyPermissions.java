@@ -3,8 +3,6 @@ package org.dexterx.mc.townypermissions;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import com.palmergames.bukkit.towny.TownyAPI;
-import com.palmergames.bukkit.towny.object.Town;
 
 import java.io.IOException;
 
@@ -15,6 +13,8 @@ public final class TownyPermissions extends JavaPlugin {
     @Override
     public void onEnable() {
         this.permissionManager = new TownyPermissionManager(this);
+        getServer().getPluginManager().registerEvents(new TownyEventListener(permissionManager), this);
+        getCommand("tperm").setExecutor(this);
     }
 
     @Override
@@ -32,12 +32,6 @@ public final class TownyPermissions extends JavaPlugin {
             String townName = args[0];
             String action = args[1];
             String permission = args[2];
-
-            Town town = TownyAPI.getInstance().getTown(townName);
-            if (town == null) {
-                sender.sendMessage("Town not found.");
-                return false;
-            }
 
             try {
                 if (action.equalsIgnoreCase("add")) {
